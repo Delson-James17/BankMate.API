@@ -10,7 +10,7 @@ namespace BankMate.API.Data
         public DbSet<Roles> Roles => Set<Roles>();
         public DbSet<Account> Accounts => Set<Account>();
         public DbSet<Transaction> Transactions => Set<Transaction>();
-        public DbSet<ActivityLog> ActivityLogs { get; set; }
+        public DbSet<ActivityLogs> ActivityLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +29,20 @@ namespace BankMate.API.Data
                 .HasForeignKey(t => t.AccountId);
             modelBuilder.Entity<Roles>().ToTable("Roles");
             modelBuilder.Entity<Transaction>().ToTable("Transactions");
+            modelBuilder.Entity<Roles>().HasData(
+        new Roles
+        {
+            Id = Guid.NewGuid(),
+            Name = "User",
+            Description = "Default role for regular users"
+        },
+        new Roles
+        {
+            Id = Guid.NewGuid(),
+            Name = "Admin",
+            Description = "Administrator role"
+        }
+    );
         }
     }
 }

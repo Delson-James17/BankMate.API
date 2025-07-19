@@ -242,3 +242,4 @@ C:\Users\Lenovo\source\repos\BankMate\BankMate.API\BankMate.API\obj\Debug\net8.0
 C:\Users\Lenovo\source\repos\BankMate\BankMate.API\BankMate.API\obj\Debug\net8.0\BankMate.API.pdb
 C:\Users\Lenovo\source\repos\BankMate\BankMate.API\BankMate.API\obj\Debug\net8.0\BankMate.API.genruntimeconfig.cache
 C:\Users\Lenovo\source\repos\BankMate\BankMate.API\BankMate.API\obj\Debug\net8.0\ref\BankMate.API.dll
+C:\Users\Lenovo\source\repos\BankMate\BankMate.API\BankMate.API\obj\Debug\net8.0\BankMate.API.sourcelink.json

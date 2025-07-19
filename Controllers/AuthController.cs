@@ -49,7 +49,7 @@ namespace BankMate.API.Controllers
                 LastUpdated = DateTime.UtcNow
             };
             _context.Accounts.Add(account);
-            await ActivityLogger.LogAsync(_context, user.Id, "Register", $"User registration is successfully on this date {user.CreatedAt}", $"{user?.FirstName}{user?.LastName}");
+            await ActivityLogger.LogAsync(_context, user.Id, "Register", $"User registration is successfully on this date {user.CreatedAt}", $"{user.FirstName}{user.LastName}");
 
             await _context.SaveChangesAsync();
             var token = _jwt.GenerateToken(user);
@@ -72,11 +72,13 @@ namespace BankMate.API.Controllers
                 await _context.SaveChangesAsync();
                 return Unauthorized("Invalid Username or Password");
             }
-            await ActivityLogger.LogAsync(_context, user.Id, "Login", $"User Login on this date : {user.LastActivity}", $"{user?.FirstName}{user?.LastName}");
             user.FailedLoginAttempts = 0;
             user.LastActivity = DateTime.UtcNow;
             await _context.SaveChangesAsync();
+
             var token = _jwt.GenerateToken(user);
+            await ActivityLogger.LogAsync(_context, user.Id, "Login", $"User Login on this date : {user.LastActivity}", $"{user?.FirstName}{user?.LastName}");
+
             return Ok(new { token });
         }
         [Authorize]
@@ -96,7 +98,7 @@ namespace BankMate.API.Controllers
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
             await _context.SaveChangesAsync();
-            await ActivityLogger.LogAsync(_context, user.Id, "ChangePassword", $"Password Change on this : {user.LastActivity}", $"{user?.FirstName}{user?.LastName}");
+            await ActivityLogger.LogAsync(_context, user.Id, "ChangePassword", $"Password Change on this : {user.LastActivity}", $"{user.FirstName}{user.LastName}");
 
             var token = _jwt.GenerateToken(user);
 
@@ -121,9 +123,8 @@ namespace BankMate.API.Controllers
             user.Email = dto.Email;
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
-            await ActivityLogger.LogAsync(_context, user.Id, "UpdateInfo", $"Updating Info on this : {user.LastActivity}", $"{user?.FirstName}{user?.LastName}");
-
             await _context.SaveChangesAsync();
+            await ActivityLogger.LogAsync(_context, user.Id, "UpdateInfo", $"Updating Info on this : {user.LastActivity}", $"{user.FirstName}{user.LastName}");
 
             return Ok(new
             {

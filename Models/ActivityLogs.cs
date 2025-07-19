@@ -1,6 +1,6 @@
 ﻿namespace BankMate.API.Models
 {
-    public class ActivityLog
+    public class ActivityLogs
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public Guid? UserId { get; set; }

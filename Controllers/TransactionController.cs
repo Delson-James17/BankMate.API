@@ -78,23 +78,24 @@ namespace BankMate.API.Controllers
             if (!Guid.TryParse(userIdClaim, out var userId))
                 return Unauthorized("Invalid user identifier.");
             var user = await _context.Users.FindAsync(userId);
-            var fromAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == dto.FromAccountId && a.UserId == userId);
+            var fromAccount = await _context.Accounts.Include(a => a.User).FirstOrDefaultAsync(a => a.Id == dto.FromAccountId && a.UserId == userId);
             if (fromAccount == null) return Unauthorized("Invalid sender account");
 
-            var toAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == dto.ToAccountId);
+            var toAccount = await _context.Accounts.Include(a => a.User).FirstOrDefaultAsync(a => a.Id == dto.ToAccountId);
             if (toAccount == null) return NotFound("Receiver account not found");
 
             if (fromAccount.Balance < dto.Amount) return BadRequest("Insufficient funds");
 
             fromAccount.Balance -= dto.Amount;
             toAccount.Balance += dto.Amount;
+          
 
             fromAccount.LastUpdated = DateTime.UtcNow;
             toAccount.LastUpdated = DateTime.UtcNow;
 
             await LogTransaction(fromAccount.Id, dto.Amount, "Transfer - Out", dto.Description);
             await LogTransaction(toAccount.Id, dto.Amount, "Transfer - In", dto.Description);
-            await ActivityLogger.LogAsync(_context, userId, "Transfer", $"Transfer money from {fromAccount.Id} to {toAccount.Id}", $"{user?.FirstName} {user?.LastName}");
+            await ActivityLogger.LogAsync(_context, userId, "Transfer", $"Transfer money from {fromAccount.User?.FirstName} to {toAccount.User?.FirstName} total of {dto.Amount} pesos", $"{user?.FirstName} {user?.LastName}");
                
             await _context.SaveChangesAsync();
 

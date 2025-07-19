@@ -7,7 +7,7 @@ namespace BankMate.API.Helpers
     {
         public static async Task LogAsync(AppDbContext context, Guid? userId, string action, string description, string name)
         {
-            var log = new ActivityLog
+            var log = new ActivityLogs
             {
                 UserId = userId,
                 Action = action,
