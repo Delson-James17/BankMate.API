@@ -1,4 +1,5 @@
 ﻿using BankMate.API.Data;
+using BankMate.API.Helpers;
 using BankMate.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +35,9 @@ namespace BankMate.API.Controllers
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.UserId == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (account == null) return NotFound("User not found.");
+            await ActivityLogger.LogAsync(_context, userId, "GetBalance", $"Balance {account.Balance}", $"{user?.FirstName}{user?.LastName}");
 
             return Ok(new { balance = account.Balance });
         }
@@ -51,6 +54,7 @@ namespace BankMate.API.Controllers
             var user = await _context.Users.FindAsync(userId);
             if (user == null) return NotFound("User not found.");
             await LogTransaction(account.Id, amount, "Deposit","Deposit");
+            await ActivityLogger.LogAsync(_context, userId, "Deposit", $"Deposited {amount}", $"{user.FirstName}{user.LastName}");
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Deposit succesful", newBalance = account.Balance });
@@ -68,6 +72,7 @@ namespace BankMate.API.Controllers
             account.Balance -= amount;
             account.LastUpdated = DateTime.UtcNow;
             await LogTransaction(account.Id, amount, "Withdraw", "Withdraw");
+            await ActivityLogger.LogAsync(_context, userId, "Withdraw", $"Withdraw {amount}", $"{user.FirstName}{user.LastName}");
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Withdrawal successful", newBalance = account.Balance });

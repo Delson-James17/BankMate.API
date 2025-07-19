@@ -1,5 +1,6 @@
 ﻿using BankMate.API.Data;
 using BankMate.API.DTOs;
+using BankMate.API.Helpers;
 using BankMate.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

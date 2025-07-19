@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BankMate.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0af1daa5bf856b4b9735430a0ca1a88f98863b58")]
 [assembly: System.Reflection.AssemblyProductAttribute("BankMate.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BankMate.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

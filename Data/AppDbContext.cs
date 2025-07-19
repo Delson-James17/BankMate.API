@@ -10,6 +10,8 @@ namespace BankMate.API.Data
         public DbSet<Roles> Roles => Set<Roles>();
         public DbSet<Account> Accounts => Set<Account>();
         public DbSet<Transaction> Transactions => Set<Transaction>();
+        public DbSet<ActivityLog> ActivityLogs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
