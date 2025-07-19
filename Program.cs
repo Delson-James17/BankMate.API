@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using BankMate.API.Data;
 using BankMate.API.DTOs;
 using BankMate.API.Helpers;
@@ -33,6 +34,13 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
     };
 });
+builder.Services.AddMemoryCache();
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+builder.Services.AddInMemoryRateLimiting();
 
 // 2. Add DB Context
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -86,31 +94,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseIpRateLimiting();
 app.MapControllers();
-
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    if (!db.Roles.Any(r => r.Name == "User"))
-    {
-        db.Roles.Add(new Roles
-        {
-            Id = Guid.NewGuid(),
-            Name = "User",
-            Description = "Default role for regular users"
-        });
-
-        db.Roles.Add(new Roles
-        {
-            Id = Guid.NewGuid(),
-            Name = "Admin",
-            Description = "Administrator role"
-        });
-
-        db.SaveChanges();
-    }
-}
 
 app.Run();
 
